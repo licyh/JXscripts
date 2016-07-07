@@ -1,0 +1,24 @@
+#!/usr/bin/expect
+#begin
+set timeout -1
+set destip [lindex $argv 0]
+
+spawn ssh vagrant@$destip
+
+expect {
+  "yes/no" {send "yes\r"; exp_continue}
+  "password:" {send "vagrant\r"}
+}
+
+
+#body
+expect ":~"
+send "cd ~/hadoop/install/hadoop-2.6.0/share/hadoop/mapreduce\r"
+expect ":~"
+send "hadoop jar hadoop-mapreduce-client-jobclient-2.6.0-tests.jar TestDFSIO -read -nrFiles 20 -fileSize 100 >> ~/read.log 2>&1\r"
+
+
+#end
+expect ":~"
+send "exit\r"
+
